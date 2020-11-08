@@ -22,9 +22,29 @@
                 <button class="btn btn-sm btn-outline-success" @click="sliderStatus = !sliderStatus">
                     <i class="fas fa-dollar-sign"></i>
                 </button>
-                <div class="ml-2" v-if="cart.length > 0">
-                    <b>Cart: </b>
-                    <span class="badge badge-pill badge-success">{{ cart.length }}</span>
+                <div class="dropdown ml-2" v-if="cart.length > 0">
+                    <button class="btn btn-success btn-sm dropdown-toggle" id="cartDropdown" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <span class="badge badge-pill badge-light">
+                            {{ cartQty }}
+                        </span>
+                        <i class="fas fa-shopping-cart mx-2"></i>
+                        <price :value="Number(cartTotal)"></price>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="cartDropdown">
+                        <div v-for="(item, index) in cart" :key="index">
+                            <div class="dropdown-item-text text-nowrap text-right">
+                                <span class="badge badge-pill badge-warning align-text-top mr-1">
+                                    {{ item.qty }}
+                                </span>
+                                {{ item.product.name }}
+                                <b>
+                                    {{ (item.qty * item.product.price) | currency }}
+                                </b>
+                                <a href="#" @click.stop="deleteItem(index)" class="badge badge-danger text-white">-</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -45,32 +65,7 @@
             </div>
         </transition>
 
-        <transition-group name="fade"
-                          tag="div"
-                          enter-active-class="animate__animated animate__fadeInRight"
-                          leave-active-class="animate__animated animate__fadeOutRight">
-            <div class="row d-flex mb-3 align-items-center"
-                 v-for="(item, index) in products" :key="item.id"
-                 v-if="item.price <= Number(maximum)">
-                <div class="col-1 m-auto">
-                    <button class="btn btn-info" v-on:click="addItem(item)">+</button>
-                </div>
-                <div class="col-sm-4">
-                    <img class="img-fluid d-block" :src="item.image" :alt="item.name">
-                </div>
-                <div class="col">
-                    <h3 class="text-info">
-                        {{ item.name }}
-                    </h3>
-                    <p class="mb-0">
-                        {{ item.description }}
-                    </p>
-                    <div class="h5 float-right">
-                        ${{ Number(item.price) }}
-                    </div>
-                </div>
-            </div>
-        </transition-group>
+        <products-list :products="products" :maximum="maximum" @add="addItem"></products-list>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
